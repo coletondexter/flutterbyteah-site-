@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#654c45">
+  <meta name="description" content="A visual diary by flutterbyteah — photographs of people, places, and the moments in between.">
+  <title>flutterbyteah — photographs, kept close</title>
+  <style>
+    :root {
+      --paper: #f1ebe5;
+      --paper-deep: #e5d9d0;
+      --ink: #654c45;
+      --muted: #c5b3a8;
+      --green: #e5d9d0;
+      --green-deep: #493631;
+      --acid: #d2ad99;
+      --line: rgba(241, 235, 229, .25);
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sans: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      --page: min(1440px, calc(100vw - 96px));
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    body.locked { overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button { color: inherit; font: inherit; }
+    img { display: block; width: 100%; }
+    .page { width: var(--page); margin-inline: auto; }
+    .topbar {
+      height: 86px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      z-index: 3;
+    }
+    .wordmark { font-family: var(--serif); font-size: 27px; letter-spacing: -.075em; }
+    .wordmark i { color: #d2ad99; font-style: italic; }
+    .navlinks { display: flex; align-items: center; gap: 38px; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; }
+    .navlinks a { transition: opacity .2s ease; }
+    .navlinks a:hover { opacity: .56; }
+    .navlinks .social-link { border: 1px solid var(--line); padding: 12px 16px; border-radius: 99px; }
+    .menu-toggle { display: none; background: none; border: 0; padding: 10px; cursor: pointer; }
+    .hero {
+      min-height: 690px;
+      display: grid;
+      grid-template-columns: .82fr 1.18fr;
+      gap: clamp(42px, 8vw, 128px);
+      align-items: center;
+      padding: 54px 0 76px;
+    }
+    .hero-copy { padding: 0 0 5px 5.5%; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; font-size: 10px; font-weight: 600; letter-spacing: .19em; line-height: 1.5; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 27px; height: 1px; background: currentColor; }
+    h1, h2, p { margin-top: 0; }
+    h1 {
+      max-width: 570px;
+      margin: 26px 0 22px;
+      font-family: var(--serif);
+      font-size: clamp(66px, 7.8vw, 116px);
+      font-weight: 400;
+      letter-spacing: -.082em;
+      line-height: .91;
+    }
+    h1 em { font-weight: 400; color: #d2ad99; }
+    .hero-text { max-width: 355px; color: #dfd0c7; font-family: var(--serif); font-size: 19px; line-height: 1.55; }
+    .hero-actions { display: flex; align-items: center; gap: 22px; margin-top: 35px; }
+    .pill-link { display: inline-flex; align-items: center; gap: 15px; border-radius: 99px; background: var(--paper); color: var(--ink); padding: 15px 20px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; transition: background .2s, transform .2s; }
+    .pill-link:hover { background: var(--acid); transform: translateY(-2px); }
+    .pill-link .arrow { font-size: 16px; line-height: 10px; }
+    .text-link { border-bottom: 1px solid var(--line); padding-bottom: 5px; font-size: 12px; }
+    .hero-art { min-width: 0; position: relative; padding: 0 0 36px 32px; }
+    .hero-image-wrap { position: relative; min-width: 0; background: transparent; }
+    .hero-image-wrap blockquote { width: min(100%, 540px) !important; min-width: 0 !important; margin: 0 auto !important; }
+    .hero-stamp {
+      position: absolute; z-index: 2; top: 42px; left: -8px;
+      display: grid; place-items: center; width: 105px; height: 105px;
+      border-radius: 50%; background: var(--acid); color: var(--ink);
+      transform: rotate(-11deg); text-align: center;
+      font-size: 9px; letter-spacing: .12em; line-height: 1.5; text-transform: uppercase;
+    }
+    .hero-stamp span { display: block; font-family: var(--serif); font-size: 27px; line-height: 1; letter-spacing: -.08em; }
+    .hero-index { position: absolute; right: 0; bottom: 0; writing-mode: vertical-rl; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+    .side-caption { position: absolute; top: 38%; left: -1px; writing-mode: vertical-rl; transform: rotate(180deg); font-size: 9px; letter-spacing: .17em; text-transform: uppercase; }
+    .ticker { border-block: 1px solid var(--line); overflow: hidden; white-space: nowrap; }
+    .ticker-inner { min-height: 63px; display: flex; justify-content: center; align-items: center; gap: 30px; font-family: var(--serif); font-size: 18px; font-style: italic; color: #e1cbc0; }
+    .ticker-inner b { width: 5px; height: 5px; border-radius: 50%; background: #d2ad99; }
+    .section { padding-block: 125px; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 41px; }
+    .section-head .eyebrow { color: #d2ad99; }
+    h2 { margin: 15px 0 0; font-family: var(--serif); font-size: clamp(43px, 5.5vw, 76px); font-weight: 400; letter-spacing: -.075em; line-height: .96; }
+    .section-intro { max-width: 265px; margin: 0 0 5px; color: var(--muted); font-family: var(--serif); font-size: 16px; line-height: 1.5; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+    .filter-btn { border: 1px solid var(--line); border-radius: 99px; background: transparent; padding: 10px 15px; font-size: 10px; letter-spacing: .11em; text-transform: uppercase; cursor: pointer; transition: all .2s ease; }
+    .filter-btn:hover, .filter-btn[aria-pressed="true"] { border-color: var(--paper); background: var(--paper); color: var(--ink); }
+    .filter-status { margin: -12px 0 26px; color: var(--muted); font-size: 10px; letter-spacing: .08em; }
+    .gallery-controls { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
+    .gallery-controls .filters { margin-bottom: 26px; }
+    .manage-gallery-btn { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line); border-radius: 99px; background: transparent; padding: 10px 15px; color: var(--paper); font-size: 10px; letter-spacing: .11em; text-transform: uppercase; cursor: pointer; transition: all .2s ease; white-space: nowrap; }
+    .manage-gallery-btn:hover { border-color: var(--paper); background: var(--paper); color: var(--ink); }
+    .manage-gallery-btn span { font-size: 16px; line-height: 10px; }
+    .feature-post { display: grid; grid-template-columns: 1fr minmax(320px, 480px); gap: 34px; align-items: center; margin: 0 0 55px; padding: 34px clamp(24px, 5vw, 70px); background: var(--green); color: var(--green-deep); }
+    .feature-post-copy { max-width: 450px; }
+    .feature-post-copy .eyebrow { color: #896b5c; }
+    .feature-post-copy h3 { margin: 17px 0 13px; font-family: var(--serif); font-size: clamp(32px, 4vw, 51px); font-weight: 400; letter-spacing: -.065em; line-height: .98; }
+    .feature-post-copy p { max-width: 350px; color: #705a50; font-family: var(--serif); font-size: 16px; line-height: 1.5; }
+    .feature-post-link { display: inline-block; margin-top: 8px; border-bottom: 1px solid rgba(73,54,49,.45); padding-bottom: 5px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .instagram-embed { width: 100%; min-width: 0; display: flex; justify-content: center; }
+    .instagram-embed blockquote { width: min(100%, 420px) !important; min-width: 0 !important; margin: 0 auto !important; }
+    .instagram-embed blockquote a { color: #493631; }
+    .work-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 46px 22px; align-items: start; }
+    .work-card { min-width: 0; }
+    .work-card:nth-child(1) { grid-column: span 7; }
+    .work-card:nth-child(2) { grid-column: span 5; margin-top: 93px; }
+    .work-card:nth-child(3) { grid-column: 2 / span 5; }
+    .work-card:nth-child(4) { grid-column: 7 / span 5; margin-top: 67px; }
+    .work-card[hidden] { display: none; }
+    .work-photo { min-width: 0; overflow: visible; background: transparent; }
+    .work-photo blockquote { width: min(100%, 540px) !important; min-width: 0 !important; margin: 0 auto !important; }
+    .work-photo blockquote a { color: var(--ink); }
+    .work-photo > img { aspect-ratio: 1 / 1.14; width: 100%; height: auto; object-fit: cover; background: var(--paper-deep); }
+    .work-caption { display: flex; justify-content: space-between; gap: 16px; padding-top: 14px; }
+    .work-title { margin: 0; font-family: var(--serif); font-size: 21px; letter-spacing: -.03em; }
+    .work-type { margin: 4px 0 0; color: var(--muted); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
+    .work-number { color: var(--muted); font-size: 10px; }
+    .work-source { display: inline-block; margin-top: 10px; border-bottom: 1px solid rgba(210,173,153,.55); padding-bottom: 3px; color: #d2ad99; font-size: 9px; letter-spacing: .11em; text-transform: uppercase; }
+    .work-source:hover { color: var(--paper); }
+    .gallery-dialog { width: min(640px, calc(100vw - 32px)); max-height: min(88vh, 820px); overflow: auto; border: 1px solid rgba(73,54,49,.2); padding: 0; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px rgba(24,16,14,.32); }
+    .gallery-dialog::backdrop { background: rgba(31,22,19,.72); backdrop-filter: blur(3px); }
+    .gallery-dialog-inner { padding: clamp(22px, 5vw, 38px); }
+    .gallery-dialog-head { display: flex; justify-content: space-between; align-items: start; gap: 18px; border-bottom: 1px solid rgba(73,54,49,.18); padding-bottom: 20px; }
+    .gallery-dialog-head .eyebrow { color: #896b5c; }
+    .gallery-dialog h3 { margin: 12px 0 0; font-family: var(--serif); font-size: clamp(34px, 5vw, 48px); font-weight: 400; letter-spacing: -.06em; line-height: 1; }
+    .admin-login { max-width: 430px; margin: 22px auto 5px; }
+    .admin-login .gallery-form-submit { margin-top: 5px; }
+    .admin-panel-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 18px 0; }
+    .admin-panel-head p { margin: 0; color: #80695e; font-family: var(--serif); font-size: 15px; }
+    .admin-lock-btn { border: 1px solid rgba(73,54,49,.24); border-radius: 99px; background: transparent; padding: 9px 12px; color: var(--ink); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+    .admin-lock-btn:hover { background: var(--paper-deep); }
+    .dialog-close { display: grid; place-items: center; flex: 0 0 auto; width: 38px; height: 38px; border: 1px solid rgba(73,54,49,.24); border-radius: 50%; background: transparent; color: var(--ink); font-size: 21px; cursor: pointer; }
+    .gallery-help { max-width: 510px; margin: 18px 0 22px; color: #705a50; font-family: var(--serif); font-size: 16px; line-height: 1.5; }
+    .gallery-form { display: grid; gap: 15px; }
+    .gallery-form label { display: grid; gap: 7px; color: #80695e; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .gallery-form input, .gallery-form select { width: 100%; min-height: 44px; border: 1px solid rgba(73,54,49,.24); border-radius: 0; background: rgba(255,255,255,.45); padding: 11px 12px; color: var(--ink); font: 14px var(--sans); letter-spacing: 0; text-transform: none; }
+    .gallery-form input[type="file"] { padding: 8px; }
+    .gallery-form input::placeholder { color: #9b8478; }
+    .gallery-form-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 14px; }
+    .gallery-or { display: flex; align-items: center; gap: 12px; color: #9b8478; font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
+    .gallery-or::before, .gallery-or::after { content: ""; height: 1px; flex: 1; background: rgba(73,54,49,.16); }
+    .gallery-form-note, .gallery-feedback { margin: -5px 0 0; color: #80695e; font-size: 11px; line-height: 1.5; }
+    .gallery-feedback { min-height: 17px; color: #654c45; }
+    .gallery-form-submit { justify-self: start; border: 0; border-radius: 99px; background: var(--ink); padding: 13px 18px; color: var(--paper); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+    .gallery-form-submit:hover { background: #493631; }
+    .gallery-list-head { display: flex; justify-content: space-between; align-items: end; gap: 15px; margin-top: 27px; border-top: 1px solid rgba(73,54,49,.18); padding-top: 22px; }
+    .gallery-list-head h4 { margin: 0; font-family: var(--serif); font-size: 24px; font-weight: 400; }
+    .gallery-list-head span { color: #80695e; font-size: 10px; }
+    .gallery-manager-list { display: grid; gap: 8px; margin: 13px 0 0; padding: 0; list-style: none; }
+    .gallery-manager-item { display: flex; justify-content: space-between; align-items: center; gap: 16px; border-bottom: 1px solid rgba(73,54,49,.12); padding: 10px 0; }
+    .gallery-manager-item strong { display: block; font-family: var(--serif); font-size: 17px; font-weight: 400; }
+    .gallery-manager-item small { display: block; margin-top: 3px; color: #80695e; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+    .remove-photo-btn { flex: 0 0 auto; border: 1px solid rgba(101,76,69,.3); border-radius: 99px; background: transparent; padding: 8px 11px; color: var(--ink); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+    .remove-photo-btn:hover { border-color: #8b4437; background: #8b4437; color: white; }
+    .note-strip { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 54px; padding: 16px 19px; border: 1px solid var(--line); color: #dfd0c7; font-size: 10px; letter-spacing: .03em; }
+    .note-strip span:first-child { color: #d2ad99; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .interlude { background: var(--green); color: var(--green-deep); padding-block: 108px; }
+    .interlude-inner { display: grid; grid-template-columns: .8fr 1.2fr; gap: 9%; align-items: center; }
+    .monogram { min-width: 0; }
+    .monogram blockquote { width: min(100%, 540px) !important; min-width: 0 !important; margin: 0 auto !important; }
+    .monogram blockquote a { color: var(--green-deep); }
+    .interlude-copy { max-width: 600px; }
+    .interlude-copy h2 { font-size: clamp(48px, 5.5vw, 76px); max-width: 570px; }
+    .interlude-copy .body-copy { max-width: 460px; margin: 24px 0 30px; color: #705a50; font-family: var(--serif); font-size: 19px; line-height: 1.6; }
+    .interlude-copy .eyebrow { color: #896b5c; }
+    .interlude-copy h2 em { color: #a47a65; }
+    .detail-row { display: flex; flex-wrap: wrap; gap: 26px; border-top: 1px solid rgba(73,54,49,.2); padding-top: 17px; }
+    .detail { display: flex; gap: 9px; align-items: center; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+    .detail b { display: block; width: 6px; height: 6px; border-radius: 50%; background: #a47a65; }
+    .quote-section { text-align: center; padding-block: 112px; }
+    .quote-section .eyebrow { justify-content: center; }
+    .quote-section blockquote { max-width: 900px; margin: 23px auto; font-family: var(--serif); font-size: clamp(36px, 5.8vw, 75px); letter-spacing: -.065em; line-height: 1.04; }
+    .quote-section blockquote em { color: #d2ad99; font-weight: 400; }
+    .quote-credit { color: var(--muted); font-size: 9px; letter-spacing: .17em; text-transform: uppercase; }
+    .contact { background: var(--green-deep); color: var(--paper); padding-block: 91px; }
+    .contact-inner { display: flex; align-items: end; justify-content: space-between; gap: 34px; }
+    .contact .eyebrow { color: var(--acid); }
+    .contact h2 { max-width: 690px; margin-top: 18px; font-size: clamp(50px, 7vw, 94px); }
+    .contact .pill-link { background: var(--acid); color: var(--green-deep); margin-bottom: 4px; white-space: nowrap; }
+    .contact .pill-link:hover { background: #e0c2b1; }
+    footer { background: var(--green-deep); color: var(--paper); }
+    .footer-inner { min-height: 77px; display: flex; justify-content: space-between; align-items: center; gap: 20px; border-top: 1px solid rgba(241,235,229,.22); color: rgba(241,235,229,.62); font-size: 9px; letter-spacing: .11em; text-transform: uppercase; }
+    .footer-inner a { color: var(--paper); }
+    .footer-social { display: flex; gap: 24px; }
+    :focus-visible { outline: 2px solid #d2ad99; outline-offset: 4px; }
+    @media (max-width: 900px) {
+      :root { --page: min(100% - 48px, 720px); }
+      .topbar { height: 74px; }
+      .hero { min-height: auto; grid-template-columns: 1fr 1fr; gap: 28px; padding: 66px 0 60px; }
+      .hero-copy { padding-left: 0; }
+      h1 { font-size: clamp(60px, 10vw, 88px); }
+      .hero-image-wrap { min-height: 0; }
+      .section { padding-block: 95px; }
+      .feature-post { grid-template-columns: 1fr minmax(300px, 390px); gap: 20px; padding: 28px; }
+      .interlude-inner { gap: 6%; }
+      .contact-inner { align-items: start; flex-direction: column; }
+    }
+    @media (max-width: 620px) {
+      :root { --page: calc(100vw - 38px); }
+      .topbar { height: 68px; }
+      .wordmark { font-size: 25px; }
+      .menu-toggle { display: block; }
+      .menu-toggle span { display: block; width: 21px; height: 1px; background: var(--ink); margin: 5px 0; transition: transform .2s; }
+      .navlinks { display: none; position: absolute; top: 67px; right: 0; left: 0; padding: 20px 19px 22px; background: var(--paper); color: var(--green-deep); border: 1px solid rgba(73,54,49,.22); box-shadow: 0 14px 24px rgba(73,54,49,.12); align-items: stretch; flex-direction: column; gap: 21px; }
+      .navlinks.open { display: flex; }
+      .navlinks .social-link { align-self: flex-start; padding: 10px 14px; }
+      .hero { display: flex; flex-direction: column; align-items: stretch; gap: 36px; padding: 50px 0 49px; }
+      .hero-copy { padding: 0 4px; }
+      h1 { max-width: 450px; margin: 21px 0 15px; font-size: clamp(66px, 18vw, 94px); }
+      .hero-text { max-width: 320px; font-size: 17px; }
+      .hero-actions { margin-top: 24px; }
+      .hero-art { padding: 0 18px 0 16px; }
+      .hero-image-wrap { min-height: 0; }
+      .hero-stamp { width: 86px; height: 86px; left: -7px; top: 24px; font-size: 8px; }
+      .hero-stamp span { font-size: 23px; }
+      .side-caption { left: 0; }
+      .hero-index { bottom: 1px; }
+      .ticker-inner { min-height: 55px; gap: 16px; font-size: 15px; }
+      .section { padding-block: 76px; }
+      .section-head { display: block; margin-bottom: 26px; }
+      h2 { font-size: 54px; }
+      .section-intro { margin-top: 17px; font-size: 15px; }
+      .filters { gap: 6px; margin-bottom: 19px; }
+      .filter-status { margin: -8px 0 20px; }
+      .gallery-controls { align-items: start; flex-direction: column; gap: 0; }
+      .gallery-controls .filters { margin-bottom: 12px; }
+      .manage-gallery-btn { margin-bottom: 20px; }
+      .filter-btn { padding: 9px 11px; font-size: 9px; }
+      .feature-post { grid-template-columns: 1fr; gap: 24px; margin-bottom: 38px; padding: 25px 18px; }
+      .gallery-form-grid { grid-template-columns: 1fr; }
+      .gallery-dialog-inner { padding: 22px 18px; }
+      .feature-post-copy h3 { font-size: 41px; }
+      .instagram-embed blockquote { max-width: 100% !important; }
+      .work-grid { grid-template-columns: 1fr; gap: 30px; }
+      .work-card:nth-child(n) { grid-column: 1; margin-top: 0; }
+      .work-title { font-size: 18px; }
+      .work-type { font-size: 8px; }
+      .work-number { font-size: 9px; }
+      .note-strip { align-items: start; flex-direction: column; gap: 7px; margin-top: 34px; padding: 13px; line-height: 1.5; }
+      .interlude { padding-block: 69px; }
+      .interlude-inner { grid-template-columns: 1fr; gap: 34px; }
+      .interlude-copy h2 { font-size: 58px; }
+      .interlude-copy .body-copy { font-size: 17px; }
+      .detail-row { gap: 13px 20px; }
+      .quote-section { padding-block: 73px; }
+      .quote-section blockquote { font-size: 43px; }
+      .contact { padding-block: 67px 58px; }
+      .contact h2 { font-size: 62px; }
+      .contact-inner { gap: 25px; }
+      .footer-inner { min-height: 93px; align-items: start; flex-direction: column; justify-content: center; gap: 13px; padding: 16px 0; font-size: 8px; }
+      .footer-social { gap: 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page topbar">
+    <a class="wordmark" href="#top" aria-label="flutterbyteah home">flutterbyteah<i>·</i></a>
+    <button class="menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="main-nav"><span></span><span></span></button>
+    <nav class="navlinks" id="main-nav" aria-label="Main navigation">
+      <a href="#work">Selected work</a>
+      <a href="#about">The feeling</a>
+      <a href="#contact">Say hello</a>
+      <a class="social-link" href="https://www.instagram.com/flutterbyteah/" target="_blank" rel="noreferrer">Instagram ↗</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="page hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow">Couples, families & lifestyle</div>
+        <h1 id="hero-title">The feeling<br>stays <em>with you.</em></h1>
+        <p class="hero-text">A visual diary for the people, places, and little in-between moments you want to keep close.</p>
+        <div class="hero-actions">
+          <a class="pill-link" href="#work">Explore the work <span class="arrow">↓</span></a>
+          <a class="text-link" href="https://www.instagram.com/flutterbyteah/" target="_blank" rel="noreferrer">Find me on Instagram ↗</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="side-caption">A collection of almost-moments</div>
+        <div class="hero-stamp"><div>made to<br>remember<span>✳</span></div></div>
+        <div class="hero-image-wrap">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DX-qo4FASSS/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14">
+            <a href="https://www.instagram.com/p/DX-qo4FASSS/" target="_blank" rel="noreferrer">View this photograph on Instagram</a>
+          </blockquote>
+        </div>
+        <div class="hero-index">Visual diary · 2026</div>
+      </div>
+    </section>
+
+    <div class="ticker" aria-label="A little more feeling, a little less posing">
+      <div class="ticker-inner"><span>honest light</span><b></b><span>room to be yourself</span><b></b><span>the in-between</span><b></b><span>honest light</span></div>
+    </div>
+
+    <section class="page section" id="work" aria-labelledby="work-title">
+      <div class="section-head">
+        <div><div class="eyebrow">A few frames to begin</div><h2 id="work-title">Selected moments</h2></div>
+        <p class="section-intro">A little portrait, a little place, a little bit of everything that makes a day feel like yours.</p>
+      </div>
+      <div class="gallery-controls">
+        <div class="filters" role="group" aria-label="Filter photographs" aria-controls="portfolio-grid">
+          <button class="filter-btn" type="button" aria-pressed="true" data-filter="all">All moments</button>
+          <button class="filter-btn" type="button" aria-pressed="false" data-filter="couples">Couples</button>
+          <button class="filter-btn" type="button" aria-pressed="false" data-filter="portraits">Portraits</button>
+          <button class="filter-btn" type="button" aria-pressed="false" data-filter="lifestyle">Lifestyle</button>
+        </div>
+      </div>
+      <p class="filter-status" id="filter-status" role="status" aria-live="polite">Showing all 4 moments</p>
+      <div class="work-grid" id="portfolio-grid">
+        <article class="work-card" data-category="couples">
+          <div class="work-photo"><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DX-qo4FASSS/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"><a href="https://www.instagram.com/p/DX-qo4FASSS/" target="_blank" rel="noreferrer">View this photograph on Instagram</a></blockquote></div>
+          <div class="work-caption"><div><h3 class="work-title">A moment together</h3><p class="work-type">Couples · black & white</p><a class="work-source" href="https://www.instagram.com/p/DX-qo4FASSS/" target="_blank" rel="noreferrer">View original post ↗</a></div><span class="work-number">01</span></div>
+        </article>
+        <article class="work-card" data-category="lifestyle">
+          <div class="work-photo"><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DdptLAimnbn/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"><a href="https://www.instagram.com/p/DdptLAimnbn/" target="_blank" rel="noreferrer">View this photograph on Instagram</a></blockquote></div>
+          <div class="work-caption"><div><h3 class="work-title">Somewhere between places</h3><p class="work-type">Lifestyle · on the road</p><a class="work-source" href="https://www.instagram.com/p/DdptLAimnbn/" target="_blank" rel="noreferrer">View original post ↗</a></div><span class="work-number">02</span></div>
+        </article>
+        <article class="work-card" data-category="portraits">
+          <div class="work-photo"><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DdrVlwrBE57/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"><a href="https://www.instagram.com/p/DdrVlwrBE57/" target="_blank" rel="noreferrer">View this photograph on Instagram</a></blockquote></div>
+          <div class="work-caption"><div><h3 class="work-title">A little wild at heart</h3><p class="work-type">Portraits · sunlit afternoon</p><a class="work-source" href="https://www.instagram.com/p/DdrVlwrBE57/" target="_blank" rel="noreferrer">View original post ↗</a></div><span class="work-number">03</span></div>
+        </article>
+        <article class="work-card" data-category="lifestyle">
+          <div class="work-photo"><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Dcb4pi_Sx0g/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"><a href="https://www.instagram.com/p/Dcb4pi_Sx0g/" target="_blank" rel="noreferrer">View this photograph on Instagram</a></blockquote></div>
+          <div class="work-caption"><div><h3 class="work-title">A little story on film</h3><p class="work-type">Lifestyle · through the window</p><a class="work-source" href="https://www.instagram.com/p/Dcb4pi_Sx0g/" target="_blank" rel="noreferrer">View original post ↗</a></div><span class="work-number">04</span></div>
+        </article>
+      </div>
+      <div class="note-strip"><span>Keep it growing</span><span>Instagram posts and uploaded photographs, kept together in one living gallery.</span></div>
+      <div class="feature-post">
+        <div class="feature-post-copy">
+          <div class="eyebrow">Featured from the feed</div>
+          <h3>Portraits, couples & lifestyle</h3>
+          <p>See session offerings and current details in this post from Teah’s Instagram feed.</p>
+          <a class="feature-post-link" href="https://www.instagram.com/p/DXz-TSmAW7F/" target="_blank" rel="noreferrer">See the original post ↗</a>
+        </div>
+        <div class="instagram-embed">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DXz-TSmAW7F/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14">
+            <a href="https://www.instagram.com/p/DXz-TSmAW7F/" target="_blank" rel="noreferrer">View this post on Instagram</a>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <section class="interlude" id="about" aria-labelledby="about-title">
+      <div class="page interlude-inner">
+        <div class="monogram">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Dbd0cpMB-d1/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14">
+            <a href="https://www.instagram.com/p/Dbd0cpMB-d1/" target="_blank" rel="noreferrer">View Teah’s photograph on Instagram</a>
+          </blockquote>
+        </div>
+        <div class="interlude-copy">
+          <div class="eyebrow">A note on the photographs</div>
+          <h2 id="about-title">Less posing.<br><em>More feeling.</em></h2>
+          <p class="body-copy">For the unplanned laugh, the familiar place in a different light, and the tiny details you didn't know you'd miss. Photographs that feel a little like being there again.</p>
+          <div class="detail-row"><span class="detail"><b></b>People, as they are</span><span class="detail"><b></b>Places, at their pace</span><span class="detail"><b></b>Little things, kept close</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page quote-section" aria-label="A thought about photographs">
+      <div class="eyebrow">A feeling to take with you</div>
+      <blockquote>Some days are ordinary until they're the ones you <em>wish you could keep.</em></blockquote>
+      <div class="quote-credit">For the moments that become everything</div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="page contact-inner">
+        <div><div class="eyebrow">Have a story in mind?</div><h2 id="contact-title">Let's make<br>something <em>memorable.</em></h2></div>
+        <a class="pill-link" href="https://www.instagram.com/flutterbyteah/" target="_blank" rel="noreferrer">Start a conversation <span class="arrow">↗</span></a>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="page footer-inner">
+      <span>© 2026 flutterbyteah · photography</span>
+      <span>Made to remember.</span>
+      <div class="footer-social"><a href="#top">Back to top ↑</a><a href="https://www.instagram.com/flutterbyteah/" target="_blank" rel="noreferrer">Instagram ↗</a><a href="#admin" id="open-gallery-manager">Admin</a></div>
+    </div>
+  </footer>
+
+  <dialog class="gallery-dialog" id="gallery-dialog" aria-labelledby="gallery-dialog-title">
+    <div class="gallery-dialog-inner">
+      <div class="gallery-dialog-head">
+        <div><div class="eyebrow">Private studio area</div><h3 id="gallery-dialog-title">Admin panel</h3></div>
+        <button class="dialog-close" type="button" aria-label="Close photo manager">×</button>
+      </div>
+      <section class="admin-login" id="admin-login" aria-labelledby="admin-login-title">
+        <p class="gallery-help" id="admin-login-title">Sign in to add or remove photos from the public gallery.</p>
+        <form class="gallery-form" id="admin-login-form">
+          <label>Admin email <input name="email" type="email" autocomplete="username" required></label>
+          <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+          <p class="gallery-feedback" id="admin-login-feedback" role="status" aria-live="polite"></p>
+          <button class="gallery-form-submit" type="submit">Sign in <span aria-hidden="true">↗</span></button>
+        </form>
+      </section>
+      <section class="admin-panel" id="admin-panel" hidden aria-label="Gallery administration">
+        <div class="admin-panel-head"><p id="admin-storage-status">Edits publish to the live gallery for everyone.</p><button class="admin-lock-btn" id="admin-lock" type="button">Sign out</button></div>
+        <p class="gallery-help">Add an image from your device or paste a public Instagram post link.</p>
+        <form class="gallery-form" id="gallery-form">
+          <label>Photo title <input name="title" type="text" maxlength="80" placeholder="e.g. A moment together"></label>
+          <div class="gallery-form-grid">
+            <label>Collection
+              <select name="category">
+                <option value="couples">Couples</option>
+                <option value="portraits">Portraits</option>
+                <option value="lifestyle">Lifestyle</option>
+              </select>
+            </label>
+            <label>Upload a photo <input name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></label>
+          </div>
+          <div class="gallery-or">or</div>
+          <label>Instagram post link <input name="instagram" type="url" inputmode="url" placeholder="https://www.instagram.com/p/.../"></label>
+          <p class="gallery-form-note">Choose one source for each entry. Uploaded photos are resized for this page.</p>
+          <p class="gallery-feedback" id="gallery-feedback" role="status" aria-live="polite"></p>
+          <button class="gallery-form-submit" type="submit">Add to gallery <span aria-hidden="true">↗</span></button>
+        </form>
+        <div class="gallery-list-head"><h4>In the gallery</h4><span id="gallery-item-count">4 photos</span></div>
+        <ul class="gallery-manager-list" id="gallery-manager-list"></ul>
+      </section>
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./site-config.js"></script>
+  <script>
+    const instagramEmbedScript = document.createElement('script');
+    instagramEmbedScript.async = true;
+    instagramEmbedScript.src = 'https://www.instagram.com/embed.js';
+    instagramEmbedScript.onload = () => window.instgrm?.Embeds?.process();
+    document.body.appendChild(instagramEmbedScript);
+
+    const nav = document.querySelector('.navlinks');
+    const menuToggle = document.querySelector('.menu-toggle');
+    menuToggle.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+      menuToggle.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+    });
+    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      nav.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.setAttribute('aria-label', 'Open navigation');
+    }));
+
+    const galleryGrid = document.querySelector('#portfolio-grid');
+    const filterButtons = [...document.querySelectorAll('.filter-btn')];
+    const filterStatus = document.querySelector('#filter-status');
+    const galleryDialog = document.querySelector('#gallery-dialog');
+    const adminLogin = document.querySelector('#admin-login');
+    const adminPanel = document.querySelector('#admin-panel');
+    const adminLoginForm = document.querySelector('#admin-login-form');
+    const adminLoginFeedback = document.querySelector('#admin-login-feedback');
+    const galleryForm = document.querySelector('#gallery-form');
+    const galleryFeedback = document.querySelector('#gallery-feedback');
+    const managerList = document.querySelector('#gallery-manager-list');
+    const galleryItemCount = document.querySelector('#gallery-item-count');
+    const adminStorageStatus = document.querySelector('#admin-storage-status');
+    const categoryNames = { couples: 'Couples', portraits: 'Portraits', lifestyle: 'Lifestyle' };
+    const siteConfig = window.FLUTTERBYTEAH_CONFIG || {};
+    const adminEmail = String(siteConfig.adminEmail || '').trim().toLowerCase();
+    const supabaseUrl = String(siteConfig.supabaseUrl || '');
+    const supabaseKey = String(siteConfig.supabasePublishableKey || '');
+    const supabaseClient = window.supabase?.createClient && /^https:\/\/.+\.supabase\.co$/.test(supabaseUrl) && !supabaseUrl.includes('YOUR_PROJECT_REF') && supabaseKey && !supabaseKey.startsWith('YOUR_')
+      ? window.supabase.createClient(supabaseUrl, supabaseKey)
+      : null;
+    let activeFilter = 'all';
+    let adminUnlocked = false;
+
+    function updateAdminView() {
+      adminLogin.hidden = adminUnlocked;
+      adminPanel.hidden = !adminUnlocked;
+    }
+
+    function instagramPostUrl(value) {
+      try {
+        const url = new URL(value);
+        if (!/(^|\.)instagram\.com$/i.test(url.hostname)) return null;
+        const match = url.pathname.match(/^\/(p|reel|tv)\/([A-Za-z0-9_-]+)\/?$/i);
+        return match ? `https://www.instagram.com/${match[1].toLowerCase()}/${match[2]}/` : null;
+      } catch { return null; }
+    }
+
+    const defaultGallery = [...galleryGrid.querySelectorAll('.work-card')].map((card, index) => {
+      const source = card.querySelector('.work-source');
+      const embed = card.querySelector('blockquote.instagram-media');
+      const image = card.querySelector('.work-photo > img');
+      const url = instagramPostUrl(source?.href || embed?.dataset.instgrmPermalink || '');
+      return {
+        id: url?.match(/\/(?:p|reel|tv)\/([^/]+)\//)?.[1] || `default-${index + 1}`,
+        type: image ? 'image' : 'instagram',
+        url,
+        src: image?.src || '',
+        title: card.querySelector('.work-title')?.textContent.trim() || 'A moment to remember',
+        subtitle: card.querySelector('.work-type')?.textContent.trim() || '',
+        category: card.dataset.category || 'lifestyle'
+      };
+    });
+
+    let gallery = defaultGallery;
+
+    function galleryPhotoFromRow(row) {
+      const type = row.kind === 'image' ? 'image' : 'instagram';
+      const src = type === 'image' && row.image_path
+        ? supabaseClient.storage.from('gallery-photos').getPublicUrl(row.image_path).data.publicUrl
+        : '';
+      return {
+        id: row.id,
+        type,
+        url: instagramPostUrl(row.instagram_url || ''),
+        src,
+        imagePath: row.image_path || '',
+        title: row.title || 'A moment to remember',
+        subtitle: row.subtitle || `${categoryNames[row.category] || 'Lifestyle'} · ${type === 'image' ? 'uploaded photograph' : 'Instagram'}`,
+        category: categoryNames[row.category] ? row.category : 'lifestyle'
+      };
+    }
+
+    async function loadRemoteGallery() {
+      if (!supabaseClient) return false;
+      const { data, error } = await supabaseClient
+        .from('gallery_photos')
+        .select('id,title,subtitle,category,kind,instagram_url,image_path,sort_order,created_at')
+        .order('sort_order', { ascending: false })
+        .order('created_at', { ascending: false });
+      if (error) {
+        if (galleryFeedback) galleryFeedback.textContent = `Could not load the live gallery: ${error.message}`;
+        return false;
+      }
+      gallery = (data || []).map(galleryPhotoFromRow);
+      renderGallery();
+      renderManagerList();
+      return true;
+    }
+
+    function applyGalleryFilter() {
+      filterButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === activeFilter)));
+      const visibleCards = [...galleryGrid.querySelectorAll('.work-card')];
+      let visibleCount = 0;
+      visibleCards.forEach(card => {
+        const visible = activeFilter === 'all' || card.dataset.category === activeFilter;
+        card.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+      const filterName = categoryNames[activeFilter];
+      if (filterStatus) filterStatus.textContent = `${visibleCount} ${visibleCount === 1 ? 'moment' : 'moments'} shown${filterName ? ` · ${filterName}` : ''}`;
+    }
+
+    function renderManagerList() {
+      managerList.replaceChildren();
+      galleryItemCount.textContent = `${gallery.length} ${gallery.length === 1 ? 'photo' : 'photos'}`;
+      if (!gallery.length) {
+        const empty = document.createElement('li');
+        empty.className = 'gallery-manager-item';
+        empty.textContent = 'Your gallery is empty. Add a photo to begin again.';
+        managerList.append(empty);
+        return;
+      }
+      gallery.forEach(photo => {
+        const item = document.createElement('li');
+        item.className = 'gallery-manager-item';
+        const details = document.createElement('div');
+        const title = document.createElement('strong');
+        title.textContent = photo.title;
+        const meta = document.createElement('small');
+        meta.textContent = `${categoryNames[photo.category]} · ${photo.type === 'image' ? 'Uploaded photo' : 'Instagram post'}`;
+        details.append(title, meta);
+        const remove = document.createElement('button');
+        remove.className = 'remove-photo-btn';
+        remove.type = 'button';
+        remove.dataset.removePhoto = photo.id;
+        remove.textContent = 'Remove';
+        remove.setAttribute('aria-label', `Remove ${photo.title} from gallery`);
+        item.append(details, remove);
+        managerList.append(item);
+      });
+    }
+
+    function renderGallery() {
+      const fragment = document.createDocumentFragment();
+      gallery.forEach((photo, index) => {
+        const card = document.createElement('article');
+        card.className = 'work-card';
+        card.dataset.category = photo.category;
+        const visual = document.createElement('div');
+        visual.className = 'work-photo';
+        if (photo.type === 'image') {
+          const image = document.createElement('img');
+          image.src = photo.src;
+          image.alt = photo.title;
+          image.loading = 'lazy';
+          image.decoding = 'async';
+          visual.append(image);
+        } else {
+          const embed = document.createElement('blockquote');
+          embed.className = 'instagram-media';
+          embed.dataset.instgrmPermalink = `${photo.url}?utm_source=ig_embed&campaign=loading`;
+          embed.dataset.instgrmVersion = '14';
+          const link = document.createElement('a');
+          link.href = photo.url;
+          link.target = '_blank';
+          link.rel = 'noreferrer';
+          link.textContent = 'View this photograph on Instagram';
+          embed.append(link);
+          visual.append(embed);
+        }
+        const caption = document.createElement('div');
+        caption.className = 'work-caption';
+        const captionCopy = document.createElement('div');
+        const title = document.createElement('h3');
+        title.className = 'work-title';
+        title.textContent = photo.title;
+        const subtitle = document.createElement('p');
+        subtitle.className = 'work-type';
+        subtitle.textContent = photo.subtitle || `${categoryNames[photo.category]} · ${photo.type === 'image' ? 'uploaded photograph' : 'Instagram'}`;
+        captionCopy.append(title, subtitle);
+        if (photo.type === 'instagram') {
+          const source = document.createElement('a');
+          source.className = 'work-source';
+          source.href = photo.url;
+          source.target = '_blank';
+          source.rel = 'noreferrer';
+          source.textContent = 'View original post ↗';
+          captionCopy.append(source);
+        }
+        const number = document.createElement('span');
+        number.className = 'work-number';
+        number.textContent = String(index + 1).padStart(2, '0');
+        caption.append(captionCopy, number);
+        card.append(visual, caption);
+        fragment.append(card);
+      });
+      galleryGrid.replaceChildren(fragment);
+      applyGalleryFilter();
+      if (window.instgrm?.Embeds) window.instgrm.Embeds.process();
+    }
+
+    async function refreshGallery(message) {
+      const loaded = await loadRemoteGallery();
+      if (galleryFeedback) galleryFeedback.textContent = loaded ? message : 'The change was saved, but the live gallery could not be refreshed. Reload this page to check it.';
+    }
+
+    async function removeGalleryPhoto(id) {
+      if (!supabaseClient) {
+        galleryFeedback.textContent = 'Live gallery storage is not connected yet.';
+        return;
+      }
+      const photo = gallery.find(item => item.id === id);
+      const { error } = await supabaseClient.from('gallery_photos').delete().eq('id', id);
+      if (error) {
+        galleryFeedback.textContent = `Could not remove this photo: ${error.message}`;
+        return;
+      }
+      let message = 'Photo removed from the live gallery.';
+      if (photo?.imagePath) {
+        const { error: storageError } = await supabaseClient.storage.from('gallery-photos').remove([photo.imagePath]);
+        if (storageError) message += ' The gallery entry was removed, but its stored image may need cleanup.';
+      }
+      await refreshGallery(message);
+    }
+
+    async function initializeLiveGallery() {
+      if (!supabaseClient) return;
+      await loadRemoteGallery();
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) return;
+      const email = data.session?.user?.email?.toLowerCase();
+      if (email && adminEmail && email === adminEmail) {
+        adminUnlocked = true;
+        updateAdminView();
+        renderManagerList();
+      } else if (data.session) {
+        await supabaseClient.auth.signOut();
+      }
+    }
+
+    async function resizePhoto(file) {
+      if (!file.type.startsWith('image/')) throw new Error('Choose an image file.');
+      if (file.size > 25 * 1024 * 1024) throw new Error('Choose an image smaller than 25 MB.');
+      const objectUrl = URL.createObjectURL(file);
+      try {
+        const image = new Image();
+        image.src = objectUrl;
+        await image.decode();
+        const scale = Math.min(1, 1800 / Math.max(image.naturalWidth, image.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(image.naturalWidth * scale);
+        canvas.height = Math.round(image.naturalHeight * scale);
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('This photo could not be prepared.');
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        return await new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('This photo could not be prepared.')), 'image/jpeg', .84));
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+    }
+
+    document.querySelector('.filters')?.addEventListener('click', event => {
+      const button = event.target.closest?.('.filter-btn');
+      if (!button) return;
+      activeFilter = button.dataset.filter;
+      applyGalleryFilter();
+    });
+
+    document.querySelector('#open-gallery-manager').addEventListener('click', event => {
+      event.preventDefault();
+      updateAdminView();
+      adminLoginFeedback.textContent = '';
+      if (!supabaseClient) {
+        adminLoginFeedback.textContent = 'Live gallery storage is not connected yet. Add the Supabase project settings to site-config.js first.';
+      } else if (!adminEmail) {
+        adminLoginFeedback.textContent = 'Set the gallery admin email in site-config.js before signing in.';
+      } else if (adminUnlocked) {
+        galleryFeedback.textContent = 'Changes publish to the live gallery for every visitor.';
+        renderManagerList();
+      }
+      galleryDialog.showModal();
+    });
+    adminLoginForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!supabaseClient || !adminEmail) {
+        adminLoginFeedback.textContent = 'Connect the Supabase project settings before signing in.';
+        return;
+      }
+      const email = adminLoginForm.elements.email.value.trim().toLowerCase();
+      const password = adminLoginForm.elements.password.value;
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error || data?.user?.email?.toLowerCase() !== adminEmail) {
+        if (data?.user) await supabaseClient.auth.signOut();
+        adminLoginFeedback.textContent = error ? 'Sign-in failed. Check the email and password.' : 'This account is not the gallery administrator.';
+        adminLoginForm.elements.password.value = '';
+        return;
+      }
+      adminUnlocked = true;
+      updateAdminView();
+      galleryFeedback.textContent = 'Changes publish to the live gallery for every visitor.';
+      await loadRemoteGallery();
+      galleryForm.elements.title.focus();
+    });
+    document.querySelector('#admin-lock').addEventListener('click', async () => {
+      adminUnlocked = false;
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      adminLoginForm.reset();
+      updateAdminView();
+      galleryDialog.close();
+    });
+    galleryDialog.querySelector('.dialog-close').addEventListener('click', () => galleryDialog.close());
+    galleryDialog.addEventListener('click', event => {
+      if (event.target === galleryDialog) galleryDialog.close();
+    });
+    managerList.addEventListener('click', event => {
+      const button = event.target.closest?.('[data-remove-photo]');
+      if (!button) return;
+      removeGalleryPhoto(button.dataset.removePhoto);
+    });
+    galleryForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const file = galleryForm.elements.photo.files[0];
+      const suppliedUrl = galleryForm.elements.instagram.value.trim();
+      const url = suppliedUrl ? instagramPostUrl(suppliedUrl) : null;
+      if (file && suppliedUrl) {
+        galleryFeedback.textContent = 'Choose either an uploaded photo or an Instagram link for each entry.';
+        return;
+      }
+      if (!file && !suppliedUrl) {
+        galleryFeedback.textContent = 'Choose a photo file or add an Instagram post link.';
+        return;
+      }
+      if (suppliedUrl && !url) {
+        galleryFeedback.textContent = 'Use a public Instagram post, reel, or video link.';
+        return;
+      }
+      const category = galleryForm.elements.category.value;
+      const suppliedTitle = galleryForm.elements.title.value.trim();
+      let uploadedImagePath = '';
+      try {
+        if (!supabaseClient) throw new Error('Live gallery storage is not connected yet.');
+        const title = suppliedTitle || (file ? file.name.replace(/\.[^.]+$/, '') : 'A moment to remember');
+        let row;
+        if (file) {
+          const id = `photo-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+          const imagePath = `${id}.jpg`;
+          const imageBlob = await resizePhoto(file);
+          const { error: uploadError } = await supabaseClient.storage.from('gallery-photos').upload(imagePath, imageBlob, { contentType: 'image/jpeg', cacheControl: '31536000' });
+          if (uploadError) throw uploadError;
+          uploadedImagePath = imagePath;
+          row = { id, title, subtitle: `${categoryNames[category]} · uploaded photograph`, category, kind: 'image', instagram_url: null, image_path: imagePath, sort_order: Date.now() };
+        } else {
+          const id = url.match(/\/(?:p|reel|tv)\/([^/]+)\//)[1];
+          row = { id, title, subtitle: `${categoryNames[category]} · Instagram`, category, kind: 'instagram', instagram_url: url, image_path: null, sort_order: Date.now() };
+        }
+        const { error: saveError } = await supabaseClient.from('gallery_photos').upsert(row);
+        if (saveError) throw saveError;
+        activeFilter = 'all';
+        galleryForm.reset();
+        applyGalleryFilter();
+        await refreshGallery('Added to your live gallery.');
+      } catch (error) {
+        let message = error.message || 'That photo could not be added.';
+        if (uploadedImagePath && supabaseClient) {
+          const { error: cleanupError } = await supabaseClient.storage.from('gallery-photos').remove([uploadedImagePath]);
+          if (cleanupError) message += ' The uploaded file may need cleanup in Supabase Storage.';
+        }
+        galleryFeedback.textContent = message;
+      }
+    });
+
+    renderGallery();
+    renderManagerList();
+    if (adminStorageStatus) adminStorageStatus.textContent = supabaseClient ? 'Edits publish to the live gallery for everyone.' : 'Connect Supabase to publish edits for every visitor.';
+    initializeLiveGallery();
+
+  </script>
+</body>
+</html>
